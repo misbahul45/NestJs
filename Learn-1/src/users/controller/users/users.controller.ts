@@ -1,26 +1,29 @@
-import { Body, Controller, Get, Param, Post, Query, Req, Res } from '@nestjs/common';
-import { Request, Response } from 'express';
-
+import { Body, Controller, Get, Param, ParseBoolPipe, ParseIntPipe, Post, Query, Req, Res, UsePipes, ValidationPipe } from '@nestjs/common';
 import { CreateUserDto } from 'src/users/dtos/CreateUser.dto';
 
 
 @Controller('users')
 export class UsersController {
+    @Get('sort')
+    getUser(@Query('sortDesc', ParseBoolPipe) sortDesc:boolean ){
+        return {
+            sortDesc
+        }
+    }
     @Get()
     getUsers(){
         return {userName:"misbahul",email:"Muttaqin" }        
     }
-    // @Get(':id')
-    // getUserById(@Req() request:Request, @Res() response:Response){
-    //     console.log(request.params)
-    //     response.send({
-    //         id:request.params,
-    //         name:"Misbahul",
-    //         email:"misbahu.muttaqin395@gmail.com"
-    //     })
-    // }
+     @Get(':id')
+     getUserById(@Param('id', ParseIntPipe) id:number){
+         return({
+             id,
+             name:"Misbahul",
+             email:"misbahu.muttaqin395@gmail.com"
+         })
+     }
     @Get(':id/:postId')
-    getUserById(@Param('id') id:string, @Param('postId') postId:string){
+    getUserByIdAndPost(@Param('id') id:string, @Param('postId') postId:string){
         return {
             id,
             postId,
@@ -29,13 +32,7 @@ export class UsersController {
         }
     }
 
-    @Get('search')
-    getUser(@Query('sortBy') sortBy:string ){
-        console.log(sortBy)
-        return {
-            sortBy
-        }
-    }
+
 
     // @Post('create')
     // createUser(@Req() request:Request, @Res() response:Response){
@@ -44,6 +41,7 @@ export class UsersController {
     // }
 
     @Post('create')
+    @UsePipes(new ValidationPipe())
     createUser(@Body() userData:CreateUserDto){
         console.log(userData)
         return {}
@@ -84,4 +82,5 @@ export class UsersController {
             }
         ]
     }
+    
 }
